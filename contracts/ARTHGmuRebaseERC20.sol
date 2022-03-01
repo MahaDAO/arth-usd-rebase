@@ -13,6 +13,8 @@ contract ARTHGmuRebaseERC20 is ERC20RebasePermit, Ownable {
     uint8 public decimals = 18;
     string public symbol;
 
+    event GmuOracleChange(address indexed oracle);
+
     constructor(
         string memory _name,
         string memory _symbol,
@@ -23,5 +25,26 @@ contract ARTHGmuRebaseERC20 is ERC20RebasePermit, Ownable {
         symbol = _symbol;
         gmuOracle = IGMUOracle(_gmuOracle);
         _transferOwnership(governance); // transfer ownership to governance
+    }
+
+    function gonsPerFragment()
+        public
+        view
+        override
+        returns (uint256)
+    {
+        // make the gons per fragment be as per the gmu oracle
+        return gmuOracle.getPrice();
+    }
+
+    /**
+     * @dev only governance can change the gmu oracle
+     */
+    function setGMUOracle(address _gmuOracle)
+        public
+        onlyOwner
+    {
+        gmuOracle = IGMUOracle(_gmuOracle);
+        emit GmuOracleChange(_gmuOracle);
     }
 }

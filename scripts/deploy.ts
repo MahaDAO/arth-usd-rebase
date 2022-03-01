@@ -13,13 +13,25 @@ async function main() {
   // manually to make sure everything is compiled
   // await hre.run('compile');
 
+  const arth = "0x0";
+  const gmuOracle = "0x1";
+  const governance = "0x2";
+  const chainId = 32;
+
   // We get the contract to deploy
-  const Greeter = await ethers.getContractFactory("Greeter");
-  const greeter = await Greeter.deploy("Hello, Hardhat!");
+  const ArthUSDWrapper = await ethers.getContractFactory("ArthUSDWrapper");
+  const instance = await ArthUSDWrapper.deploy(
+    "ARTH USD Rebase",
+    "ARTH.usd",
+    arth,
+    gmuOracle,
+    governance,
+    chainId
+  );
 
-  await greeter.deployed();
+  await instance.deployed();
 
-  console.log("Greeter deployed to:", greeter.address);
+  console.log("ArthUSDWrapper deployed to:", instance.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

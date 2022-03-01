@@ -9,7 +9,7 @@ contract ERC20Rebase is IERC20 {
     using SafeMath for uint256;
 
     uint256 internal _totalSupply;
-    uint256 internal _gonsPerFragment = 1e8;
+    uint256 internal _gonsPerFragment = 1e6;
     mapping(address => uint256) internal _balances;
     mapping(address => mapping(address => uint256)) internal _allowances;
 
@@ -22,6 +22,25 @@ contract ERC20Rebase is IERC20 {
         return _gonsPerFragment;
     }
 
+    function gonsDecimals()
+        public
+        view
+        virtual
+        returns (uint256)
+    {
+        return 6;
+    }
+
+    function gonsPercision()
+        public
+        view
+        virtual
+        returns (uint256)
+    {
+        return 10 ** gonsDecimals();
+    }
+
+
     /**
      * @dev See {IERC20-totalSupply}.
      */
@@ -31,7 +50,7 @@ contract ERC20Rebase is IERC20 {
         override
         returns (uint256)
     {
-        return _totalSupply.mul(gonsPerFragment());
+        return _totalSupply.mul(gonsPerFragment()).div(gonsPercision());
     }
 
     /**
@@ -43,7 +62,7 @@ contract ERC20Rebase is IERC20 {
         override
         returns (uint256)
     {
-        return _balances[account].mul(gonsPerFragment());
+        return _balances[account].mul(gonsPerFragment()).div(gonsPercision());
     }
 
     /**
@@ -203,7 +222,7 @@ contract ERC20Rebase is IERC20 {
         uint256 value
     ) internal {
         // get amount in underlying
-        uint256 gonValues = value.div(gonsPerFragment());
+        uint256 gonValues = value.div(gonsPerFragment()).mul(gonsPercision());
 
         // sub from balance of sender
         _balances[sender] = _balances[sender].sub(gonValues);
@@ -218,7 +237,7 @@ contract ERC20Rebase is IERC20 {
     {
         require(account != address(0), "ERC20: mint to the zero address");
 
-        uint256 amount = gonValues.mul(gonsPerFragment());
+        uint256 amount = gonValues.mul(gonsPerFragment()).div(gonsPercision());
 
         _totalSupply = _totalSupply.add(gonValues);
         _balances[account] = _balances[account].add(gonValues);
@@ -231,7 +250,7 @@ contract ERC20Rebase is IERC20 {
     {
         require(account != address(0), "ARTH: burn from the zero address");
 
-        uint256 amount = gonValues.mul(gonsPerFragment());
+        uint256 amount = gonValues.mul(gonsPerFragment()).div(gonsPercision());
 
         _balances[account] = _balances[account].sub(
             gonValues,

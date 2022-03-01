@@ -8,6 +8,9 @@ import { ARTHGmuRebaseERC20 } from "./ARTHGmuRebaseERC20.sol";
 contract ArthUSDWrapper is ARTHGmuRebaseERC20 {
     IERC20 public arth;
 
+    event Deposit(address indexed who, uint256 amount);
+    event Withdraw(address indexed who, uint256 amount);
+
     constructor(
         string memory _name,
         string memory _symbol,
@@ -26,6 +29,7 @@ contract ArthUSDWrapper is ARTHGmuRebaseERC20 {
     function depositFor(address account, uint256 amount) public virtual returns (bool) {
         SafeERC20.safeTransferFrom(arth, _msgSender(), address(this), amount);
         _mint(account, amount);
+        emit Deposit(account, amount);
         return true;
     }
 
@@ -40,6 +44,7 @@ contract ArthUSDWrapper is ARTHGmuRebaseERC20 {
     function withdrawTo(address account, uint256 amount) public virtual returns (bool) {
         _burn(_msgSender(), amount);
         SafeERC20.safeTransfer(arth, account, amount);
+        emit Withdraw(account, amount);
         return true;
     }
 

@@ -8,8 +8,8 @@ import { ERC20RebasePermit } from "./ERC20RebasePermit.sol";
 
 contract ARTHGmuRebaseERC20 is ERC20RebasePermit, Ownable {
     using SafeMath for uint256;
-    IGMUOracle public gmuOracle;
 
+    IGMUOracle public gmuOracle;
     uint8 public decimals = 18;
     string public symbol;
 
@@ -23,7 +23,7 @@ contract ARTHGmuRebaseERC20 is ERC20RebasePermit, Ownable {
         uint256 chainId
     ) ERC20RebasePermit(_name, chainId) {
         symbol = _symbol;
-        gmuOracle = IGMUOracle(_gmuOracle);
+        setGMUOracle(_gmuOracle);
         _transferOwnership(governance); // transfer ownership to governance
     }
 
@@ -45,6 +45,7 @@ contract ARTHGmuRebaseERC20 is ERC20RebasePermit, Ownable {
         onlyOwner
     {
         gmuOracle = IGMUOracle(_gmuOracle);
+        decimals = uint8(gmuOracle.getDecimalPercision()) + 18;
         emit GmuOracleChange(_gmuOracle);
     }
 }

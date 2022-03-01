@@ -2,11 +2,10 @@
 pragma solidity ^0.8.0;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 import { SafeMath } from "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 
-contract ERC20Rebase is IERC20, Context {
+contract ERC20Rebase is IERC20 {
     using SafeMath for uint256;
 
     uint256 internal _totalSupply;
@@ -17,6 +16,7 @@ contract ERC20Rebase is IERC20, Context {
     function gonsPerFragment()
         public
         view
+        virtual
         returns (uint256)
     {
         return _gonsPerFragment;
@@ -31,7 +31,7 @@ contract ERC20Rebase is IERC20, Context {
         override
         returns (uint256)
     {
-        return _totalSupply.div(gonsPerFragment());
+        return _totalSupply.mul(gonsPerFragment());
     }
 
     /**
@@ -43,7 +43,7 @@ contract ERC20Rebase is IERC20, Context {
         override
         returns (uint256)
     {
-        return _balances[account].div(gonsPerFragment());
+        return _balances[account].mul(gonsPerFragment());
     }
 
     /**
@@ -60,7 +60,7 @@ contract ERC20Rebase is IERC20, Context {
         override
         returns (bool)
     {
-        _transfer(_msgSender(), recipient, amount);
+        _transfer(msg.sender, recipient, amount);
         return true;
     }
 
@@ -90,7 +90,7 @@ contract ERC20Rebase is IERC20, Context {
         override
         returns (bool)
     {
-        _approve(_msgSender(), spender, amount);
+        _approve(msg.sender, spender, amount);
         return true;
     }
 
@@ -116,8 +116,8 @@ contract ERC20Rebase is IERC20, Context {
         _transfer(sender, recipient, amount);
         _approve(
             sender,
-            _msgSender(),
-            _allowances[sender][_msgSender()].sub(
+            msg.sender,
+            _allowances[sender][msg.sender].sub(
                 amount,
                 "ERC20: transfer amount exceeds allowance"
             )
@@ -144,9 +144,9 @@ contract ERC20Rebase is IERC20, Context {
         returns (bool)
     {
         _approve(
-            _msgSender(),
+            msg.sender,
             spender,
-            _allowances[_msgSender()][spender].add(addedValue)
+            _allowances[msg.sender][spender].add(addedValue)
         );
         return true;
     }
@@ -171,9 +171,9 @@ contract ERC20Rebase is IERC20, Context {
         returns (bool)
     {
         _approve(
-            _msgSender(),
+            msg.sender,
             spender,
-            _allowances[_msgSender()][spender].sub(
+            _allowances[msg.sender][spender].sub(
                 subtractedValue,
                 "ERC20: decreased allowance below zero"
             )
@@ -203,7 +203,7 @@ contract ERC20Rebase is IERC20, Context {
         uint256 value
     ) internal {
         // get amount in underlying
-        uint256 gonValues = value.mul(gonsPerFragment());
+        uint256 gonValues = value.div(gonsPerFragment());
 
         // sub from balance of sender
         _balances[sender] = _balances[sender].sub(gonValues);
@@ -213,12 +213,12 @@ contract ERC20Rebase is IERC20, Context {
         emit Transfer(msg.sender, recipient, value);
     }
 
-    function _mint(address account, uint256 amount)
+    function _mint(address account, uint256 gonValues)
         internal
     {
         require(account != address(0), "ERC20: mint to the zero address");
 
-        uint256 gonValues = amount.mul(gonsPerFragment());
+        uint256 amount = gonValues.mul(gonsPerFragment());
 
         _totalSupply = _totalSupply.add(gonValues);
         _balances[account] = _balances[account].add(gonValues);
@@ -226,12 +226,12 @@ contract ERC20Rebase is IERC20, Context {
         emit Transfer(address(0), account, amount);
     }
 
-    function _burn(address account, uint256 amount)
+    function _burn(address account, uint256 gonValues)
         internal
     {
         require(account != address(0), "ARTH: burn from the zero address");
 
-        uint256 gonValues = amount.mul(gonsPerFragment());
+        uint256 amount = gonValues.mul(gonsPerFragment());
 
         _balances[account] = _balances[account].sub(
             gonValues,

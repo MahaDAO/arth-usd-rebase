@@ -65,6 +65,14 @@ contract ERC20Rebase is IERC20 {
         return _balances[account].mul(gonsPerFragment()).div(gonsPercision());
     }
 
+    function underlyingBalanceOf(address account)
+        public
+        view
+        returns (uint256)
+    {
+        return _balances[account];
+    }
+
     /**
      * @dev See {IERC20-transfer}.
      *

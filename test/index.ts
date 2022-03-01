@@ -57,12 +57,17 @@ describe("ArthUSDWrapper", function () {
         .withArgs(operator.address, TENe18);
     });
 
-    it("Balances should be correct", async function () {
+    it("ARTH.usd balance should be correct", async function () {
       const arthR = await arth.balanceOf(operator.address);
       expect(arthR).eq(TENe18.mul("999999999"));
 
       const arthUsd = await arthUsdRebase.balanceOf(operator.address);
       expect(arthUsd).eq(TENe18.mul(2)); // should report 2$
+    });
+
+    it("Underlying ARTH balance should be the same", async function () {
+      const arthUsd = await arthUsdRebase.underlyingBalanceOf(operator.address);
+      expect(arthUsd).eq(TENe18); // should report 1 ARTH
     });
 
     it("Should perform withdraw properly", async function () {
@@ -87,9 +92,14 @@ describe("ArthUSDWrapper", function () {
       await gmuOracle.setPrice(2100000, 6);
     });
 
-    it("Balances should increase", async function () {
+    it("ARTH.usd balance should increase", async function () {
       const arthUsd = await arthUsdRebase.balanceOf(operator.address);
       expect(arthUsd).eq(TENe18.mul(21).div(10)); // should report 2.1$
+    });
+
+    it("Underlying ARTH balance should be the same", async function () {
+      const arthUsd = await arthUsdRebase.underlyingBalanceOf(operator.address);
+      expect(arthUsd).eq(TENe18); // should report 1 ARTH
     });
 
     it("Withdraw should give back the principal amount", async function () {
@@ -114,9 +124,14 @@ describe("ArthUSDWrapper", function () {
       await gmuOracle.setPrice(1500000, 6);
     });
 
-    it("Balances should increase", async function () {
+    it("ARTH.usd balance should decrease", async function () {
       const arthUsd = await arthUsdRebase.balanceOf(operator.address);
       expect(arthUsd).eq(TENe18.mul(15).div(10)); // should report 1.5$
+    });
+
+    it("Underlying ARTH balance should be the same", async function () {
+      const arthUsd = await arthUsdRebase.underlyingBalanceOf(operator.address);
+      expect(arthUsd).eq(TENe18); // should report 1 ARTH
     });
 
     it("Withdraw should give back the principal amount", async function () {

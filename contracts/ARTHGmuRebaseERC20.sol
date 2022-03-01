@@ -37,6 +37,16 @@ contract ARTHGmuRebaseERC20 is ERC20RebasePermit, Ownable {
         return gmuOracle.getPrice();
     }
 
+    function gonsDecimals()
+        public
+        view
+        override
+        virtual
+        returns (uint256)
+    {
+        return gmuOracle.getDecimalPercision();
+    }
+
     /**
      * @dev only governance can change the gmu oracle
      */
@@ -45,7 +55,6 @@ contract ARTHGmuRebaseERC20 is ERC20RebasePermit, Ownable {
         onlyOwner
     {
         gmuOracle = IGMUOracle(_gmuOracle);
-        decimals = uint8(gmuOracle.getDecimalPercision()) + 18;
         emit GmuOracleChange(_gmuOracle);
     }
 }

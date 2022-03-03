@@ -2,10 +2,10 @@ import hre, { ethers } from "hardhat";
 // const hre = require("hardhat");
 
 async function main() {
-  const arth = "0xb69a424df8c737a122d0e60695382b3eec07ff4b";
-  const gmuOracle = "0xdd465b9c68750a02c307744a749954b1f9787efb";
+  const arth = "0xe52509181feb30eb4979e29ec70d50fd5c44d590";
+  const gmuOracle = "0xBe5514E856a4eb971653BcC74475B26b56763FD0";
   const governance = "0xeccE08c2636820a81FC0c805dBDC7D846636bbc4";
-  const chainId = 56;
+  const chainId = 137;
 
   const constructorArguments = [
     "ARTH USD Rebase",
@@ -27,11 +27,11 @@ async function main() {
     constructorArguments[5]
   );
 
-  await instance.deployed();
+  // await instance.deployed();
   console.log("ArthUSDWrapper deployed to:", instance.address);
 
   await hre.run("verify:verify", {
-    address: "0x88fd584dF3f97c64843CD474bDC6F78e398394f4",
+    address: instance.address,
     contract: "contracts/ArthUSDWrapper.sol:ArthUSDWrapper",
     constructorArguments,
   });

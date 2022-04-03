@@ -237,7 +237,7 @@ contract ERC20Rebase is IERC20 {
 
         // add to balance of receiver
         _balances[recipient] = _balances[recipient].add(gonValues);
-        emit Transfer(msg.sender, recipient, value);
+        emit Transfer(sender, recipient, value);
     }
 
     function _mint(address account, uint256 gonValues)

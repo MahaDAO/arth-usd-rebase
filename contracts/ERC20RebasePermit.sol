@@ -1,8 +1,8 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
-import { ERC20Rebase } from "./ERC20Rebase.sol";
-import { ITransferReceiver } from "./interfaces/ITransferReceiver.sol";
+import {ERC20Rebase} from "./ERC20Rebase.sol";
+import {ITransferReceiver} from "./interfaces/ITransferReceiver.sol";
 
 contract ERC20RebasePermit is ERC20Rebase {
     string public name;
@@ -19,10 +19,7 @@ contract ERC20RebasePermit is ERC20Rebase {
             "Transfer(address owner,address to,uint256 value,uint256 nonce,uint256 deadline)"
         );
 
-    constructor(
-        string memory _name,
-        uint256 chainId
-    ) {
+    constructor(string memory _name, uint256 chainId) {
         name = _name;
 
         DOMAIN_SEPARATOR = keccak256(
@@ -43,13 +40,13 @@ contract ERC20RebasePermit is ERC20Rebase {
         uint256 value,
         bytes calldata data
     ) public virtual returns (bool) {
-        require(to != address(0) || to != address(this), "ARTH: bad `to` address");
+        require(
+            to != address(0) || to != address(this),
+            "ARTH.usd: bad `to` address"
+        );
 
         uint256 balance = balanceOf(msg.sender);
-        require(
-            balance >= value,
-            "ARTH: transfer exceeds balance"
-        );
+        require(balance >= value, "ARTH.usd: transfer exceeds balance");
 
         _transfer(msg.sender, to, value);
         return ITransferReceiver(to).onTokenTransfer(msg.sender, value, data);
@@ -64,31 +61,33 @@ contract ERC20RebasePermit is ERC20Rebase {
         bytes32 r,
         bytes32 s
     ) public virtual returns (bool) {
-        require(block.timestamp <= deadline, "ARTH: Expired permit");
+        require(block.timestamp <= deadline, "ARTH.usd: Expired permit");
 
-        bytes32 hashStruct =
-            keccak256(
-                abi.encode(
-                    TRANSFER_TYPEHASH,
-                    target,
-                    to,
-                    value,
-                    nonces[target]++,
-                    deadline
-                )
-            );
+        bytes32 hashStruct = keccak256(
+            abi.encode(
+                TRANSFER_TYPEHASH,
+                target,
+                to,
+                value,
+                nonces[target]++,
+                deadline
+            )
+        );
 
         require(
             _verifyEIP712(target, hashStruct, v, r, s) ||
                 _verifyPersonalSign(target, hashStruct, v, r, s),
-            "ARTH: bad signature"
+            "ARTH.usd: bad signature"
         );
 
         // NOTE: is this check needed, was there in the refered contract.
-        require(to != address(0) || to != address(this), "ARTH: bad `to` address");
+        require(
+            to != address(0) || to != address(this),
+            "ARTH.usd: bad `to` address"
+        );
         require(
             balanceOf(target) >= value,
-            "ARTH: transfer exceeds balance"
+            "ARTH.usd: transfer exceeds balance"
         );
 
         _transfer(target, to, value);
@@ -102,10 +101,9 @@ contract ERC20RebasePermit is ERC20Rebase {
         bytes32 r,
         bytes32 s
     ) internal view returns (bool) {
-        bytes32 hash =
-            keccak256(
-                abi.encodePacked("\x19\x01", DOMAIN_SEPARATOR, hashStruct)
-            );
+        bytes32 hash = keccak256(
+            abi.encodePacked("\x19\x01", DOMAIN_SEPARATOR, hashStruct)
+        );
         address signer = ecrecover(hash, v, r, s);
 
         return (signer != address(0) && signer == target);

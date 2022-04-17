@@ -1,9 +1,8 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { SafeMath } from "@openzeppelin/contracts/utils/math/SafeMath.sol";
-
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {SafeMath} from "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 contract ERC20Rebase is IERC20 {
     using SafeMath for uint256;
@@ -13,55 +12,29 @@ contract ERC20Rebase is IERC20 {
     mapping(address => uint256) internal _balances;
     mapping(address => mapping(address => uint256)) internal _allowances;
 
-    function gonsPerFragment()
-        public
-        view
-        virtual
-        returns (uint256)
-    {
+    function gonsPerFragment() public view virtual returns (uint256) {
         return _gonsPerFragment;
     }
 
-    function gonsDecimals()
-        public
-        view
-        virtual
-        returns (uint256)
-    {
+    function gonsDecimals() public view virtual returns (uint256) {
         return 6;
     }
 
-    function gonsPercision()
-        public
-        view
-        virtual
-        returns (uint256)
-    {
-        return 10 ** gonsDecimals();
+    function gonsPercision() public view virtual returns (uint256) {
+        return 10**gonsDecimals();
     }
-
 
     /**
      * @dev See {IERC20-totalSupply}.
      */
-    function totalSupply()
-        public
-        view
-        override
-        returns (uint256)
-    {
+    function totalSupply() public view override returns (uint256) {
         return _totalSupply.mul(gonsPerFragment()).div(gonsPercision());
     }
 
     /**
      * @dev See {IERC20-balanceOf}.
      */
-    function balanceOf(address account)
-        public
-        view
-        override
-        returns (uint256)
-    {
+    function balanceOf(address account) public view override returns (uint256) {
         return _balances[account].mul(gonsPerFragment()).div(gonsPercision());
     }
 
@@ -146,7 +119,7 @@ contract ERC20Rebase is IERC20 {
             msg.sender,
             _allowances[sender][msg.sender].sub(
                 amount,
-                "ERC20: transfer amount exceeds allowance"
+                "ARTH.usd: transfer amount exceeds allowance"
             )
         );
 
@@ -202,7 +175,7 @@ contract ERC20Rebase is IERC20 {
             spender,
             _allowances[msg.sender][spender].sub(
                 subtractedValue,
-                "ERC20: decreased allowance below zero"
+                "ARTH.usd: decreased allowance below zero"
             )
         );
         return true;
@@ -240,10 +213,8 @@ contract ERC20Rebase is IERC20 {
         emit Transfer(sender, recipient, value);
     }
 
-    function _mint(address account, uint256 gonValues)
-        internal
-    {
-        require(account != address(0), "ERC20: mint to the zero address");
+    function _mint(address account, uint256 gonValues) internal {
+        require(account != address(0), "ARTH.usd: mint to the zero address");
 
         uint256 amount = gonValues.mul(gonsPerFragment()).div(gonsPercision());
 
@@ -253,16 +224,14 @@ contract ERC20Rebase is IERC20 {
         emit Transfer(address(0), account, amount);
     }
 
-    function _burn(address account, uint256 gonValues)
-        internal
-    {
-        require(account != address(0), "ARTH: burn from the zero address");
+    function _burn(address account, uint256 gonValues) internal {
+        require(account != address(0), "ARTH.usd: burn from the zero address");
 
         uint256 amount = gonValues.mul(gonsPerFragment()).div(gonsPercision());
 
         _balances[account] = _balances[account].sub(
             gonValues,
-            "ARTH: burn amount exceeds balance"
+            "ARTH.usd: burn amount exceeds balance"
         );
 
         _totalSupply = _totalSupply.sub(gonValues);

@@ -2,10 +2,10 @@ import hre, { ethers } from "hardhat";
 // const hre = require("hardhat");
 
 async function main() {
-  const arth = "0xe52509181feb30eb4979e29ec70d50fd5c44d590";
-  const gmuOracle = "0xBe5514E856a4eb971653BcC74475B26b56763FD0";
-  const governance = "0xeccE08c2636820a81FC0c805dBDC7D846636bbc4";
-  const chainId = 137;
+  const arth = "0x8CC0F052fff7eaD7f2EdCCcaC895502E884a8a71";
+  const gmuOracle = "0x288961ee2805a1961d6a98092aa83b00f3065514";
+  const governance = "0x6357EDbfE5aDA570005ceB8FAd3139eF5A8863CC";
+  const chainId = 1;
 
   const constructorArguments = [
     "ARTH USD Rebase",

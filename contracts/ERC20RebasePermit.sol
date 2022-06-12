@@ -19,7 +19,7 @@ contract ERC20RebasePermit is ERC20Rebase {
             "Transfer(address owner,address to,uint256 value,uint256 nonce,uint256 deadline)"
         );
 
-    constructor(string memory _name, uint256 chainId) {
+    constructor(string memory _name) {
         name = _name;
 
         DOMAIN_SEPARATOR = keccak256(
@@ -29,7 +29,7 @@ contract ERC20RebasePermit is ERC20Rebase {
                 ),
                 keccak256(bytes(name)),
                 keccak256(bytes("1")),
-                chainId,
+                block.chainid,
                 address(this)
             )
         );
@@ -41,8 +41,8 @@ contract ERC20RebasePermit is ERC20Rebase {
         bytes calldata data
     ) public virtual returns (bool) {
         require(
-            to != address(0) || to != address(this),
-            "ARTH.usd: bad `to` address"
+            to != address(0) && to != address(this),
+            "ARTH.usd: bad to address"
         );
 
         uint256 balance = balanceOf(msg.sender);
@@ -82,8 +82,8 @@ contract ERC20RebasePermit is ERC20Rebase {
 
         // NOTE: is this check needed, was there in the refered contract.
         require(
-            to != address(0) || to != address(this),
-            "ARTH.usd: bad `to` address"
+            to != address(0) && to != address(this),
+            "ARTH.usd: bad to address"
         );
         require(
             balanceOf(target) >= value,

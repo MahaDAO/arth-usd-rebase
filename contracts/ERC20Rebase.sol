@@ -206,7 +206,10 @@ contract ERC20Rebase is IERC20 {
         uint256 gonValues = value.div(gonsPerFragment()).mul(gonsPercision());
 
         // sub from balance of sender
-        _balances[sender] = _balances[sender].sub(gonValues);
+        _balances[sender] = _balances[sender].sub(
+            gonValues,
+            "ARTH.usd: transfer amount exceeds balance"
+        );
 
         // add to balance of receiver
         _balances[recipient] = _balances[recipient].add(gonValues);
@@ -216,26 +219,27 @@ contract ERC20Rebase is IERC20 {
     function _mint(address account, uint256 gonValues) internal {
         require(account != address(0), "ARTH.usd: mint to the zero address");
 
-        uint256 amount = gonValues.mul(gonsPerFragment()).div(gonsPercision());
-
         _totalSupply = _totalSupply.add(gonValues);
         _balances[account] = _balances[account].add(gonValues);
 
+        uint256 amount = gonValues.mul(gonsPerFragment()).div(gonsPercision());
         emit Transfer(address(0), account, amount);
     }
 
     function _burn(address account, uint256 gonValues) internal {
         require(account != address(0), "ARTH.usd: burn from the zero address");
 
-        uint256 amount = gonValues.mul(gonsPerFragment()).div(gonsPercision());
-
         _balances[account] = _balances[account].sub(
             gonValues,
             "ARTH.usd: burn amount exceeds balance"
         );
 
-        _totalSupply = _totalSupply.sub(gonValues);
+        _totalSupply = _totalSupply.sub(
+            gonValues,
+            "ARTH.usd: not enough in supply"
+        );
 
+        uint256 amount = gonValues.mul(gonsPerFragment()).div(gonsPercision());
         emit Transfer(account, address(0), amount);
     }
 
@@ -257,8 +261,8 @@ contract ERC20Rebase is IERC20 {
         address spender,
         uint256 amount
     ) internal virtual {
-        require(owner != address(0), "ARTH: approve from zero");
-        require(spender != address(0), "ARTH: approve to zero");
+        require(owner != address(0), "ARTH.usd: approve from zero");
+        require(spender != address(0), "ARTH.usd: approve to zero");
 
         _allowances[owner][spender] = amount;
         emit Approval(owner, spender, amount);

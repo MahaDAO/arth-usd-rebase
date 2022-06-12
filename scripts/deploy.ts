@@ -16,22 +16,22 @@ async function main() {
     chainId,
   ];
 
-  // We get the contract to deploy
-  const ArthUSDWrapper = await ethers.getContractFactory("ArthUSDWrapper");
-  const instance = await ArthUSDWrapper.deploy(
-    String(constructorArguments[0]),
-    String(constructorArguments[1]),
-    String(constructorArguments[2]),
-    String(constructorArguments[3]),
-    String(constructorArguments[4]),
-    constructorArguments[5]
-  );
+  // // We get the contract to deploy
+  // const ArthUSDWrapper = await ethers.getContractFactory("ArthUSDWrapper");
+  // const instance = await ArthUSDWrapper.deploy(
+  //   String(constructorArguments[0]),
+  //   String(constructorArguments[1]),
+  //   String(constructorArguments[2]),
+  //   String(constructorArguments[3]),
+  //   String(constructorArguments[4]),
+  //   constructorArguments[5]
+  // );
 
-  // await instance.deployed();
-  console.log("ArthUSDWrapper deployed to:", instance.address);
+  // // await instance.deployed();
+  // console.log("ArthUSDWrapper deployed to:", instance.address);
 
   await hre.run("verify:verify", {
-    address: instance.address,
+    address: "0x973F054eDBECD287209c36A2651094fA52F99a71",
     contract: "contracts/ArthUSDWrapper.sol:ArthUSDWrapper",
     constructorArguments,
   });
